@@ -1,0 +1,364 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  .snap-frame {
+    width: 420px;
+    margin: 0 auto;
+    background: #0c0c10;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.03),
+      0 20px 60px rgba(0,0,0,0.5),
+      0 0 120px rgba(124,58,237,0.06);
+    font-family: 'DM Sans', sans-serif;
+    color: #e8e8ec;
+  }
+
+  .snap-chrome {
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .snap-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+  }
+
+  .snap-meta {
+    flex: 1;
+  }
+
+  .snap-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f0f0f4;
+    letter-spacing: -0.2px;
+  }
+
+  .snap-author {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 1px;
+  }
+
+  .vote-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: -0.3px;
+  }
+
+  .vote-badge strong {
+    color: #e8e8ec;
+    font-weight: 500;
+  }
+
+  .snap-body {
+    padding: 22px 18px 18px;
+  }
+
+  .market-question {
+    font-size: 19px;
+    font-weight: 700;
+    color: #f4f4f8;
+    line-height: 1.35;
+    letter-spacing: -0.4px;
+    margin-bottom: 6px;
+  }
+
+  .market-meta {
+    font-size: 12px;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 22px;
+    letter-spacing: -0.1px;
+  }
+
+  .market-meta span {
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* Split bar */
+  .split-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+  }
+
+  .split-yes { color: #34d399; }
+  .split-no { color: #fb7185; }
+
+  .split-bar {
+    display: flex;
+    height: 36px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    gap: 2px;
+  }
+
+  .split-bar-yes {
+    width: 62%;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: -0.3px;
+  }
+
+  .split-bar-no {
+    width: 38%;
+    background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: -0.3px;
+  }
+
+  .split-total {
+    text-align: center;
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    margin-bottom: 22px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -0.3px;
+  }
+
+  /* Buttons */
+  .bet-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .btn-bet {
+    flex: 1;
+    padding: 13px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: -0.2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+  }
+
+  .btn-yes {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  .btn-yes:hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+
+  .btn-no {
+    background: rgba(244, 63, 94, 0.12);
+    color: #fb7185;
+    border: 1px solid rgba(244, 63, 94, 0.2);
+  }
+
+  .btn-no:hover {
+    background: rgba(244, 63, 94, 0.2);
+    border-color: rgba(244, 63, 94, 0.35);
+  }
+
+  .nav-row {
+    display: flex;
+    gap: 6px;
+  }
+
+  .btn-nav {
+    flex: 1;
+    padding: 11px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: -0.2px;
+  }
+
+  .btn-nav:hover {
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.55);
+  }
+
+  .btn-create {
+    background: rgba(124, 58, 237, 0.08);
+    color: rgba(167, 139, 250, 0.7);
+    border-color: rgba(124, 58, 237, 0.12);
+  }
+
+  .btn-create:hover {
+    background: rgba(124, 58, 237, 0.15);
+    color: rgba(167, 139, 250, 0.9);
+  }
+
+  /* Component mapping */
+  .mapping {
+    max-width: 420px;
+    margin: 28px auto 0;
+    padding: 20px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .mapping h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0 0 14px 0;
+  }
+
+  .mapping-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 13px;
+  }
+
+  .mapping-row:last-child { border-bottom: none; }
+
+  .mapping-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: #a78bfa;
+    background: rgba(124, 58, 237, 0.1);
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .mapping-label {
+    color: rgba(255,255,255,0.45);
+    letter-spacing: -0.1px;
+  }
+
+  .constraint-box {
+    max-width: 420px;
+    margin: 12px auto 0;
+    padding: 14px 18px;
+    background: rgba(250, 204, 21, 0.04);
+    border: 1px solid rgba(250, 204, 21, 0.1);
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(250, 204, 21, 0.6);
+    line-height: 1.8;
+    letter-spacing: -0.3px;
+  }
+</style>
+
+<h2>Design: Market View Screen</h2>
+<p class="subtitle">The main screen users land on — browse markets, place bets</p>
+
+<div class="snap-frame">
+  <div class="snap-chrome">
+    <div class="snap-avatar">P</div>
+    <div class="snap-meta">
+      <div class="snap-name">Prediction Market</div>
+      <div class="snap-author">snap · farcaster</div>
+    </div>
+    <div class="vote-badge"><strong>73</strong> votes</div>
+  </div>
+
+  <div class="snap-body">
+    <div class="market-question">Will ETH hit $5,000 before August 2025?</div>
+    <div class="market-meta">by <span>@vitalik</span> · 847 votes placed</div>
+
+    <div class="split-labels">
+      <span class="split-yes">YES 62%</span>
+      <span class="split-no">38% NO</span>
+    </div>
+    <div class="split-bar">
+      <div class="split-bar-yes">527</div>
+      <div class="split-bar-no">320</div>
+    </div>
+    <div class="split-total">847 total votes</div>
+
+    <div class="bet-row">
+      <div class="btn-bet btn-yes">Bet YES</div>
+      <div class="btn-bet btn-no">Bet NO</div>
+    </div>
+
+    <div class="nav-row">
+      <div class="btn-nav">← Prev</div>
+      <div class="btn-nav btn-create">+ Create</div>
+      <div class="btn-nav">Next →</div>
+    </div>
+  </div>
+</div>
+
+<div class="mapping">
+  <h3>Snap Component Mapping</h3>
+  <div class="mapping-row">
+    <span class="mapping-tag">text (bold)</span>
+    <span class="mapping-label">Market question</span>
+  </div>
+  <div class="mapping-row">
+    <span class="mapping-tag">text (sm)</span>
+    <span class="mapping-label">Creator + vote count + your balance</span>
+  </div>
+  <div class="mapping-row">
+    <span class="mapping-tag">progress</span>
+    <span class="mapping-label">Yes/No split visualization</span>
+  </div>
+  <div class="mapping-row">
+    <span class="mapping-tag">stack (h)</span>
+    <span class="mapping-label">Bet YES / Bet NO buttons</span>
+  </div>
+  <div class="mapping-row">
+    <span class="mapping-tag">stack (h)</span>
+    <span class="mapping-label">← Prev / + Create / Next → nav</span>
+  </div>
+</div>
+
+<div class="constraint-box">
+  Root children: 5 of 7 max ✓ &nbsp;·&nbsp; Elements: ~12 of 64 max ✓ &nbsp;·&nbsp; Depth: 3 of 4 max ✓
+</div>
