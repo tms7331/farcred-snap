@@ -56,16 +56,17 @@ describe("screen builders", () => {
     expect(hasCreateBtn).toBe(true);
   });
 
-  it("buildPlaceBet includes slider with correct max", () => {
+  it("buildPlaceBet includes toggle group with amount options", () => {
     const resp = buildPlaceBet(sampleMarket, "a", 73, BASE);
     expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
-    const slider = Object.values(elements).find(
-      (el: any) => el.type === "slider",
+    const toggle = Object.values(elements).find(
+      (el: any) => el.type === "toggle_group",
     ) as any;
-    expect(slider).toBeDefined();
-    expect(slider.props.max).toBe(73);
-    expect(slider.props.min).toBe(1);
+    expect(toggle).toBeDefined();
+    expect(toggle.props.name).toBe("amount");
+    expect(toggle.props.options).toContain("5");
+    expect(toggle.props.options).toContain("73");
   });
 
   it("buildConfirmation shows confetti effect", () => {

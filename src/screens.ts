@@ -129,16 +129,23 @@ export function buildEmptyState(balance: number, base: string): SnapResponse {
 
 export function buildPlaceBet(market: Market, side: Side, balance: number, base: string): SnapResponse {
   const picked = optionLabel(market, side);
+  // Offer preset amounts capped to balance, max 6 options (toggle_group limit)
+  const presets = [5, 10, 25, 50, 100].filter(n => n <= balance);
+  if (balance > 0 && (presets.length === 0 || presets[presets.length - 1] !== balance)) {
+    presets.push(balance);
+  }
+  const options = presets.slice(0, 6).map(String);
+
   return {
     version: "1.0",
     theme: { accent: "purple" },
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: {}, children: ["question", "side-label", "amount-slider", "balance-text", "btn-row"] },
+        root: { type: "stack", props: {}, children: ["question", "side-label", "amount-toggle", "balance-text", "btn-row"] },
         question: { type: "text", props: { content: market.question, weight: "bold" } },
         "side-label": { type: "text", props: { content: `Betting on: ${picked}`, size: "sm" } },
-        "amount-slider": { type: "slider", props: { name: "amount", min: 1, max: balance, step: 1, defaultValue: Math.min(10, balance), label: "How many votes?", showValue: true } },
+        "amount-toggle": { type: "toggle_group", props: { name: "amount", options, defaultValue: options[0], label: "How many votes?" } },
         "balance-text": { type: "text", props: { content: `${balance} votes available`, size: "sm" } },
         "btn-row": { type: "stack", props: { direction: "horizontal", gap: "sm" }, children: ["back-btn", "confirm-btn"] },
         "back-btn": { type: "button", props: { label: "\u2190 Back" }, on: { press: { action: "submit", params: { target: `${base}/` } } } },
