@@ -108,10 +108,10 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     await setUserBet(marketId, fid, { side, amount });
     await addBettor(marketId, fid);
 
-    if (side === "yes") {
-      market.yesVotes += amount;
+    if (side === "a") {
+      market.votesA += amount;
     } else {
-      market.noVotes += amount;
+      market.votesB += amount;
     }
     await setMarket(market);
 
@@ -124,6 +124,8 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
 
   if (action === "submit_market") {
     const question = (ctx.action.inputs.question as string ?? "").trim();
+    const optionA = (ctx.action.inputs.optionA as string ?? "").trim() || "Yes";
+    const optionB = (ctx.action.inputs.optionB as string ?? "").trim() || "No";
     if (!question) return buildCreateMarket(BASE);
 
     const id = await getNextMarketId();
@@ -131,8 +133,10 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
       id,
       question,
       creatorFid: fid,
-      yesVotes: 0,
-      noVotes: 0,
+      optionA,
+      optionB,
+      votesA: 0,
+      votesB: 0,
       resolved: false,
       outcome: null,
     };

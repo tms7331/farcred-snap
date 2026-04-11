@@ -68,8 +68,10 @@ describe("store helpers", () => {
         id: "1",
         question: "Will ETH hit 5k?",
         creatorFid: 123,
-        yesVotes: 0,
-        noVotes: 0,
+        optionA: "Yes",
+        optionB: "No",
+        votesA: 0,
+        votesB: 0,
         resolved: false,
         outcome: null,
       };
@@ -86,9 +88,9 @@ describe("store helpers", () => {
     });
 
     it("stores and retrieves a bet", async () => {
-      await setUserBet("1", 123, { side: "yes", amount: 25 });
+      await setUserBet("1", 123, { side: "a", amount: 25 });
       const bet = await getUserBet("1", 123);
-      expect(bet).toEqual({ side: "yes", amount: 25 });
+      expect(bet).toEqual({ side: "a", amount: 25 });
     });
   });
 

@@ -15,8 +15,10 @@ const sampleMarket: Market = {
   id: "1",
   question: "Will ETH hit $5,000?",
   creatorFid: 100,
-  yesVotes: 527,
-  noVotes: 320,
+  optionA: "Over 5k",
+  optionB: "Under 5k",
+  votesA: 527,
+  votesB: 320,
   resolved: false,
   outcome: null,
 };
@@ -34,12 +36,12 @@ describe("screen builders", () => {
   it("buildMarketView shows bet info when user already bet", () => {
     const resp = buildMarketView(
       sampleMarket, 0, 3, 73,
-      { side: "yes", amount: 25 },
+      { side: "a", amount: 25 },
       BASE,
     );
     const elements = resp.ui.elements;
     const hasBetText = Object.values(elements).some(
-      (el: any) => el.type === "text" && el.props.content.includes("25 votes on YES"),
+      (el: any) => el.type === "text" && el.props.content.includes("25 votes on Over 5k"),
     );
     expect(hasBetText).toBe(true);
   });
@@ -55,7 +57,7 @@ describe("screen builders", () => {
   });
 
   it("buildPlaceBet includes slider with correct max", () => {
-    const resp = buildPlaceBet(sampleMarket, "yes", 73, BASE);
+    const resp = buildPlaceBet(sampleMarket, "a", 73, BASE);
     expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
     const slider = Object.values(elements).find(
@@ -67,32 +69,33 @@ describe("screen builders", () => {
   });
 
   it("buildConfirmation shows confetti effect", () => {
-    const resp = buildConfirmation(sampleMarket, "yes", 25, 48, BASE);
+    const resp = buildConfirmation(sampleMarket, "a", 25, 48, BASE);
     expect(resp.effects).toContain("confetti");
   });
 
-  it("buildCreateMarket includes input field", () => {
+  it("buildCreateMarket includes question and option inputs", () => {
     const resp = buildCreateMarket(BASE);
     expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
-    const input = Object.values(elements).find(
+    const inputs = Object.values(elements).filter(
       (el: any) => el.type === "input",
-    ) as any;
-    expect(input).toBeDefined();
-    expect(input.props.name).toBe("question");
+    ) as any[];
+    expect(inputs.length).toBe(3);
+    const names = inputs.map((i: any) => i.props.name).sort();
+    expect(names).toEqual(["optionA", "optionB", "question"]);
   });
 
-  it("buildResolveView shows resolve buttons", () => {
+  it("buildResolveView shows resolve buttons with custom labels", () => {
     const resp = buildResolveView(sampleMarket, 0, 3, 73, BASE);
     expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
-    const resolveYes = Object.values(elements).some(
-      (el: any) => el.type === "button" && el.props.label.includes("YES"),
+    const resolveA = Object.values(elements).some(
+      (el: any) => el.type === "button" && el.props.label.includes("Over 5k"),
     );
-    const resolveNo = Object.values(elements).some(
-      (el: any) => el.type === "button" && el.props.label.includes("NO"),
+    const resolveB = Object.values(elements).some(
+      (el: any) => el.type === "button" && el.props.label.includes("Under 5k"),
     );
-    expect(resolveYes).toBe(true);
-    expect(resolveNo).toBe(true);
+    expect(resolveA).toBe(true);
+    expect(resolveB).toBe(true);
   });
 });

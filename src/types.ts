@@ -4,14 +4,16 @@ export interface Market {
   id: string;
   question: string;
   creatorFid: number;
-  yesVotes: number;
-  noVotes: number;
+  optionA: string;
+  optionB: string;
+  votesA: number;
+  votesB: number;
   resolved: boolean;
-  outcome: "yes" | "no" | null;
+  outcome: "a" | "b" | null;
 }
 
 export interface Bet {
-  side: "yes" | "no";
+  side: "a" | "b";
   amount: number;
 }
 
@@ -19,4 +21,4 @@ export interface UserData {
   balance: number;
 }
 
-export type Side = "yes" | "no";
+export type Side = "a" | "b";
