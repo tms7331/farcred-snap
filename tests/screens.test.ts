@@ -24,7 +24,7 @@ const sampleMarket: Market = {
 describe("screen builders", () => {
   it("buildMarketView returns valid snap response", () => {
     const resp = buildMarketView(sampleMarket, 0, 3, 73, null, BASE);
-    expect(resp.version).toBe("2.0");
+    expect(resp.version).toBe("1.0");
     expect(resp.ui.root).toBeDefined();
     expect(resp.ui.elements).toBeDefined();
     const root = resp.ui.elements[resp.ui.root];
@@ -46,7 +46,7 @@ describe("screen builders", () => {
 
   it("buildEmptyState returns create button", () => {
     const resp = buildEmptyState(100, BASE);
-    expect(resp.version).toBe("2.0");
+    expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
     const hasCreateBtn = Object.values(elements).some(
       (el: any) => el.type === "button" && el.props.label.includes("Create"),
@@ -56,7 +56,7 @@ describe("screen builders", () => {
 
   it("buildPlaceBet includes slider with correct max", () => {
     const resp = buildPlaceBet(sampleMarket, "yes", 73, BASE);
-    expect(resp.version).toBe("2.0");
+    expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
     const slider = Object.values(elements).find(
       (el: any) => el.type === "slider",
@@ -73,7 +73,7 @@ describe("screen builders", () => {
 
   it("buildCreateMarket includes input field", () => {
     const resp = buildCreateMarket(BASE);
-    expect(resp.version).toBe("2.0");
+    expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
     const input = Object.values(elements).find(
       (el: any) => el.type === "input",
@@ -84,7 +84,7 @@ describe("screen builders", () => {
 
   it("buildResolveView shows resolve buttons", () => {
     const resp = buildResolveView(sampleMarket, 0, 3, 73, BASE);
-    expect(resp.version).toBe("2.0");
+    expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
     const resolveYes = Object.values(elements).some(
       (el: any) => el.type === "button" && el.props.label.includes("YES"),

@@ -1,7 +1,7 @@
 import type { Market, Bet, Side } from "./types.js";
 
 interface SnapResponse {
-  version: "2.0";
+  version: "1.0";
   theme?: { accent?: string };
   effects?: string[];
   ui: {
@@ -67,13 +67,13 @@ export function buildMarketView(
     elements["bet-no"] = { type: "button", props: { label: "Bet NO" }, on: { press: { action: "submit", params: { target: `${base}/?action=bet&market=${market.id}&side=no` } } } };
   }
 
-  return { version: "2.0", theme: { accent: "purple" }, ui: { root: "root", elements } };
+  return { version: "1.0", theme: { accent: "purple" }, ui: { root: "root", elements } };
 }
 
 export function buildResolveView(market: Market, idx: number, total: number, balance: number, base: string): SnapResponse {
   const totalVotes = market.yesVotes + market.noVotes;
   return {
-    version: "2.0",
+    version: "1.0",
     theme: { accent: "purple" },
     ui: {
       root: "root",
@@ -100,7 +100,7 @@ export function buildResolveView(market: Market, idx: number, total: number, bal
 
 export function buildEmptyState(balance: number, base: string): SnapResponse {
   return {
-    version: "2.0",
+    version: "1.0",
     theme: { accent: "purple" },
     ui: {
       root: "root",
@@ -116,7 +116,7 @@ export function buildEmptyState(balance: number, base: string): SnapResponse {
 
 export function buildPlaceBet(market: Market, side: Side, balance: number, base: string): SnapResponse {
   return {
-    version: "2.0",
+    version: "1.0",
     theme: { accent: "purple" },
     ui: {
       root: "root",
@@ -136,7 +136,7 @@ export function buildPlaceBet(market: Market, side: Side, balance: number, base:
 
 export function buildConfirmation(market: Market, side: Side, amount: number, remainingBalance: number, base: string): SnapResponse {
   return {
-    version: "2.0",
+    version: "1.0",
     theme: { accent: "purple" },
     effects: ["confetti"],
     ui: {
@@ -154,7 +154,7 @@ export function buildConfirmation(market: Market, side: Side, amount: number, re
 
 export function buildCreateMarket(base: string): SnapResponse {
   return {
-    version: "2.0",
+    version: "1.0",
     theme: { accent: "purple" },
     ui: {
       root: "root",

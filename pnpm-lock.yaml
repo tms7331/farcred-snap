@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@farcaster/snap':
-        specifier: latest
-        version: 1.22.1(typescript@5.9.3)(zod@4.3.6)
+        specifier: 2.0.0
+        version: 2.0.0(typescript@5.9.3)(zod@4.3.6)
       '@farcaster/snap-hono':
         specifier: latest
         version: 2.0.0(hono@4.12.12)(typescript@5.9.3)(zod@4.3.6)
@@ -211,24 +211,6 @@ packages:
 
   '@farcaster/snap-turso@2.0.0':
     resolution: {integrity: sha512-2VxriZ9xpawwY07pDfrYB8f0W43rNudVZA2z9gczuwZKro7jPRDNw/VnZKqI5VH0397s9eUya96jl1iq7C7CdQ==}
-
-  '@farcaster/snap@1.22.1':
-    resolution: {integrity: sha512-3UbwxfdyudrWRL+blYvYEV2/akIBGcsGxYe01UsTN42nL+EZiVPjOQTunJb2t/IKs1uIp6YMIVAZzVJ8tm3iuw==}
-    peerDependencies:
-      '@json-render/react': '*'
-      '@neynar/ui': '*'
-      lucide-react: '*'
-      react: ^18.0.0 || ^19.0.0
-      zod: ^4.0.0
-    peerDependenciesMeta:
-      '@json-render/react':
-        optional: true
-      '@neynar/ui':
-        optional: true
-      lucide-react:
-        optional: true
-      react:
-        optional: true
 
   '@farcaster/snap@2.0.0':
     resolution: {integrity: sha512-T0rwinA+wM3QPFd5abBxHOno/SfgVTTddtSNNT/JSVr0FuYU+zvFFZpPNDOs44zCgrer/x40pn9zH8rUPTX3nw==}
@@ -938,17 +920,6 @@ snapshots:
       - typescript
       - utf-8-validate
       - zod
-
-  '@farcaster/snap@1.22.1(typescript@5.9.3)(zod@4.3.6)':
-    dependencies:
-      '@farcaster/jfs': 0.3.0(typescript@5.9.3)(viem@2.47.12(typescript@5.9.3)(zod@4.3.6))
-      '@json-render/core': 0.15.0(zod@4.3.6)
-      viem: 2.47.12(typescript@5.9.3)(zod@4.3.6)
-      zod: 4.3.6
-    transitivePeerDependencies:
-      - bufferutil
-      - typescript
-      - utf-8-validate
 
   '@farcaster/snap@2.0.0(typescript@5.9.3)(zod@4.3.6)':
     dependencies:

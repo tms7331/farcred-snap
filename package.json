@@ -10,7 +10,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@farcaster/snap": "latest",
+    "@farcaster/snap": "2.0.0",
     "@farcaster/snap-hono": "latest",
     "@farcaster/snap-turso": "latest",
     "hono": "^4",
