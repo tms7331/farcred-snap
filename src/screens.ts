@@ -14,6 +14,14 @@ function optionLabel(market: Market, side: Side): string {
   return side === "a" ? market.optionA : market.optionB;
 }
 
+function amountOptions(balance: number): string[] {
+  const presets = [5, 10, 25, 50, 100].filter(n => n <= balance);
+  if (balance > 0 && (presets.length === 0 || presets[presets.length - 1] !== balance)) {
+    presets.push(balance);
+  }
+  return presets.slice(0, 6).map(String);
+}
+
 function navButtons(idx: number, total: number, base: string): Record<string, any> {
   const prev = (idx - 1 + total) % total;
   const next = (idx + 1) % total;
@@ -75,39 +83,70 @@ export function buildMarketView(
   const pctA = totalVotes > 0 ? Math.round((market.votesA / totalVotes) * 100) : 50;
   const pctB = totalVotes > 0 ? Math.round((market.votesB / totalVotes) * 100) : 50;
 
-  // For creators of unresolved markets, replace "+ Create" with "Resolve" in nav
   const nav = isCreator && !market.resolved
     ? creatorNavButtons(market, idx, total, base)
     : navButtons(idx, total, base);
 
-  const elements: Record<string, any> = {
-    root: { type: "stack", props: {}, children: ["question", "meta", "progress", "actions", "nav"] },
-    question: { type: "text", props: { content: market.question, weight: "bold" } },
-    meta: { type: "text", props: { content: `${totalVotes} votes placed \u00b7 You have ${balance} votes`, size: "sm" } },
-    progress: {
-      type: "progress",
-      props: {
-        value: market.votesA,
-        max: Math.max(totalVotes, 1),
-        label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}`,
-      },
-    },
-    ...nav,
-  };
-
   if (market.resolved) {
+    // Resolved: show outcome, no betting
     const winner = optionLabel(market, market.outcome!);
-    elements.actions = { type: "text", props: { content: `Resolved: ${winner} won`, weight: "bold" } };
-  } else if (existingBet) {
-    const picked = optionLabel(market, existingBet.side);
-    elements.actions = { type: "text", props: { content: `You bet ${existingBet.amount} votes on ${picked}`, size: "sm" } };
-  } else {
-    elements.actions = { type: "stack", props: { direction: "horizontal", gap: "sm" }, children: ["bet-a", "bet-b"] };
-    elements["bet-a"] = { type: "button", props: { label: market.optionA, variant: "primary" }, on: { press: { action: "submit", params: { target: `${base}/?action=bet&market=${market.id}&side=a` } } } };
-    elements["bet-b"] = { type: "button", props: { label: market.optionB }, on: { press: { action: "submit", params: { target: `${base}/?action=bet&market=${market.id}&side=b` } } } };
+    return {
+      version: "1.0", theme: { accent: "purple" },
+      ui: {
+        root: "root",
+        elements: {
+          root: { type: "stack", props: {}, children: ["question", "meta", "progress", "result", "nav"] },
+          question: { type: "text", props: { content: market.question, weight: "bold" } },
+          meta: { type: "text", props: { content: `${totalVotes} votes placed`, size: "sm" } },
+          progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
+          result: { type: "text", props: { content: `Resolved: ${winner} won`, weight: "bold" } },
+          ...nav,
+        },
+      },
+    };
   }
 
-  return { version: "1.0", theme: { accent: "purple" }, ui: { root: "root", elements } };
+  if (existingBet) {
+    // Already bet: show position, no more betting
+    const picked = optionLabel(market, existingBet.side);
+    return {
+      version: "1.0", theme: { accent: "purple" },
+      ui: {
+        root: "root",
+        elements: {
+          root: { type: "stack", props: {}, children: ["question", "meta", "progress", "position", "nav"] },
+          question: { type: "text", props: { content: market.question, weight: "bold" } },
+          meta: { type: "text", props: { content: `${totalVotes} votes placed \u00b7 You have ${balance} votes`, size: "sm" } },
+          progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
+          position: { type: "text", props: { content: `You bet ${existingBet.amount} votes on ${picked}`, size: "sm" } },
+          ...nav,
+        },
+      },
+    };
+  }
+
+  // Active market: side picker + amount picker + bet button, all on one page
+  // 7 root children (max allowed): question, meta, progress, side-toggle, amount-toggle, bet-btn, nav
+  const options = amountOptions(balance);
+  return {
+    version: "1.0", theme: { accent: "purple" },
+    ui: {
+      root: "root",
+      elements: {
+        root: { type: "stack", props: {}, children: ["question", "progress", "side-toggle", "amount-toggle", "bet-btn", "nav"] },
+        question: { type: "text", props: { content: market.question, weight: "bold" } },
+        progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
+        "side-toggle": { type: "toggle_group", props: { name: "side", options: [market.optionA, market.optionB], defaultValue: market.optionA, label: `Pick a side (${balance} votes)` } },
+        "amount-toggle": { type: "toggle_group", props: { name: "amount", options, defaultValue: options[0], label: "How many votes?" } },
+        "bet-btn": {
+          type: "button",
+          props: { label: "Place Bet", variant: "primary" },
+          on: { press: { action: "submit", params: { target: `${base}/?action=confirm&market=${market.id}` } } },
+        },
+        ...nav,
+      },
+    },
+  };
 }
 
 export function buildResolveView(market: Market, idx: number, total: number, balance: number, base: string): SnapResponse {
@@ -125,14 +164,7 @@ export function buildResolveView(market: Market, idx: number, total: number, bal
         root: { type: "stack", props: {}, children: ["question", "meta", "progress", "resolve-btns", "nav"] },
         question: { type: "text", props: { content: market.question, weight: "bold" } },
         meta: { type: "text", props: { content: `You created this \u00b7 ${totalVotes} total votes`, size: "sm" } },
-        progress: {
-          type: "progress",
-          props: {
-            value: market.votesA,
-            max: Math.max(totalVotes, 1),
-            label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}`,
-          },
-        },
+        progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
         "resolve-btns": { type: "stack", props: { direction: "horizontal", gap: "sm" }, children: ["resolve-a", "resolve-b"] },
         "resolve-a": { type: "button", props: { label: `${market.optionA} wins`, variant: "primary" }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=a` } } } },
         "resolve-b": { type: "button", props: { label: `${market.optionB} wins` }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=b` } } } },
@@ -153,53 +185,6 @@ export function buildEmptyState(balance: number, base: string): SnapResponse {
         title: { type: "text", props: { content: "Prediction Market", weight: "bold" } },
         subtitle: { type: "text", props: { content: `No markets yet. You have ${balance} votes \u2014 create the first market!`, size: "sm" } },
         "create-btn": { type: "button", props: { label: "Create a Market", variant: "primary" }, on: { press: { action: "submit", params: { target: `${base}/?action=create` } } } },
-      },
-    },
-  };
-}
-
-export function buildPlaceBet(market: Market, side: Side, balance: number, base: string): SnapResponse {
-  const picked = optionLabel(market, side);
-  // Offer preset amounts capped to balance, max 6 options (toggle_group limit)
-  const presets = [5, 10, 25, 50, 100].filter(n => n <= balance);
-  if (balance > 0 && (presets.length === 0 || presets[presets.length - 1] !== balance)) {
-    presets.push(balance);
-  }
-  const options = presets.slice(0, 6).map(String);
-
-  return {
-    version: "1.0",
-    theme: { accent: "purple" },
-    ui: {
-      root: "root",
-      elements: {
-        root: { type: "stack", props: {}, children: ["question", "side-label", "amount-toggle", "balance-text", "btn-row"] },
-        question: { type: "text", props: { content: market.question, weight: "bold" } },
-        "side-label": { type: "text", props: { content: `Betting on: ${picked}`, size: "sm" } },
-        "amount-toggle": { type: "toggle_group", props: { name: "amount", options, defaultValue: options[0], label: "How many votes?" } },
-        "balance-text": { type: "text", props: { content: `${balance} votes available`, size: "sm" } },
-        "btn-row": { type: "stack", props: { direction: "horizontal", gap: "sm" }, children: ["back-btn", "confirm-btn"] },
-        "back-btn": { type: "button", props: { label: "\u2190 Back" }, on: { press: { action: "submit", params: { target: `${base}/` } } } },
-        "confirm-btn": { type: "button", props: { label: "Confirm Bet", variant: "primary" }, on: { press: { action: "submit", params: { target: `${base}/?action=confirm&market=${market.id}&side=${side}` } } } },
-      },
-    },
-  };
-}
-
-export function buildConfirmation(market: Market, side: Side, amount: number, remainingBalance: number, base: string): SnapResponse {
-  const picked = optionLabel(market, side);
-  return {
-    version: "1.0",
-    theme: { accent: "purple" },
-    effects: ["confetti"],
-    ui: {
-      root: "root",
-      elements: {
-        root: { type: "stack", props: {}, children: ["title", "detail", "remaining", "back-btn"] },
-        title: { type: "text", props: { content: "Bet Placed!", weight: "bold" } },
-        detail: { type: "text", props: { content: `${amount} votes on ${picked}` } },
-        remaining: { type: "text", props: { content: `${market.question} \u00b7 ${remainingBalance} votes remaining`, size: "sm" } },
-        "back-btn": { type: "button", props: { label: "\u2190 Back to Markets" }, on: { press: { action: "submit", params: { target: `${base}/` } } } },
       },
     },
   };

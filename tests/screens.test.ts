@@ -2,8 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   buildMarketView,
   buildEmptyState,
-  buildPlaceBet,
-  buildConfirmation,
   buildCreateMarket,
   buildResolveView,
 } from "../src/screens.js";
@@ -24,13 +22,18 @@ const sampleMarket: Market = {
 };
 
 describe("screen builders", () => {
-  it("buildMarketView returns valid snap response", () => {
+  it("buildMarketView shows side and amount toggles for active market", () => {
     const resp = buildMarketView(sampleMarket, 0, 3, 73, null, false, BASE);
     expect(resp.version).toBe("1.0");
-    expect(resp.ui.root).toBeDefined();
-    expect(resp.ui.elements).toBeDefined();
-    const root = resp.ui.elements[resp.ui.root];
-    expect(root.children!.length).toBeLessThanOrEqual(7);
+    const elements = resp.ui.elements;
+    const toggles = Object.values(elements).filter(
+      (el: any) => el.type === "toggle_group",
+    ) as any[];
+    expect(toggles.length).toBe(2);
+    const sideToggle = toggles.find((t: any) => t.props.name === "side");
+    const amountToggle = toggles.find((t: any) => t.props.name === "amount");
+    expect(sideToggle.props.options).toEqual(["Over 5k", "Under 5k"]);
+    expect(amountToggle.props.options).toContain("5");
   });
 
   it("buildMarketView shows bet info when user already bet", () => {
@@ -45,6 +48,20 @@ describe("screen builders", () => {
       (el: any) => el.type === "text" && el.props.content.includes("25 votes on Over 5k"),
     );
     expect(hasBetText).toBe(true);
+    // No toggle groups when already bet
+    const toggles = Object.values(elements).filter(
+      (el: any) => el.type === "toggle_group",
+    );
+    expect(toggles.length).toBe(0);
+  });
+
+  it("buildMarketView shows resolve nav for creators", () => {
+    const resp = buildMarketView(sampleMarket, 0, 3, 73, null, true, BASE);
+    const elements = resp.ui.elements;
+    const hasResolve = Object.values(elements).some(
+      (el: any) => el.type === "button" && el.props.label === "Resolve",
+    );
+    expect(hasResolve).toBe(true);
   });
 
   it("buildEmptyState returns create button", () => {
@@ -55,24 +72,6 @@ describe("screen builders", () => {
       (el: any) => el.type === "button" && el.props.label.includes("Create"),
     );
     expect(hasCreateBtn).toBe(true);
-  });
-
-  it("buildPlaceBet includes toggle group with amount options", () => {
-    const resp = buildPlaceBet(sampleMarket, "a", 73, BASE);
-    expect(resp.version).toBe("1.0");
-    const elements = resp.ui.elements;
-    const toggle = Object.values(elements).find(
-      (el: any) => el.type === "toggle_group",
-    ) as any;
-    expect(toggle).toBeDefined();
-    expect(toggle.props.name).toBe("amount");
-    expect(toggle.props.options).toContain("5");
-    expect(toggle.props.options).toContain("73");
-  });
-
-  it("buildConfirmation shows confetti effect", () => {
-    const resp = buildConfirmation(sampleMarket, "a", 25, 48, BASE);
-    expect(resp.effects).toContain("confetti");
   });
 
   it("buildCreateMarket includes question and option inputs", () => {

@@ -19,8 +19,6 @@ import {
 import {
   buildMarketView,
   buildEmptyState,
-  buildPlaceBet,
-  buildConfirmation,
   buildCreateMarket,
   buildResolveView,
 } from "./screens.js";
@@ -75,23 +73,17 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     return showMarketAtIndex(fid, idx);
   }
 
-  if (action === "bet") {
-    const marketId = url.searchParams.get("market")!;
-    const side = url.searchParams.get("side") as Side;
-    const market = await getMarket(marketId);
-    if (!market) return showMarketAtIndex(fid, 0);
-    const user = await getOrCreateUser(fid);
-    return buildPlaceBet(market, side, user.balance, BASE);
-  }
-
   if (action === "confirm") {
     const marketId = url.searchParams.get("market")!;
-    const side = url.searchParams.get("side") as Side;
     const market = await getMarket(marketId);
     if (!market || market.resolved) return showMarketAtIndex(fid, 0);
 
     const existing = await getUserBet(marketId, fid);
     if (existing) return showMarketAtIndex(fid, 0);
+
+    // toggle_group sends the label text — map back to "a"/"b"
+    const sideInput = ctx.action.inputs.side as string;
+    const side: Side = sideInput === market.optionA ? "a" : "b";
 
     const user = await getOrCreateUser(fid);
     const amount = Math.max(1, Math.min(
@@ -112,7 +104,8 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     }
     await setMarket(market);
 
-    return buildConfirmation(market, side, amount, user.balance, BASE);
+    // Return to market view — now shows "You bet X on Y"
+    return showMarketAtIndex(fid, 0);
   }
 
   if (action === "create") {
