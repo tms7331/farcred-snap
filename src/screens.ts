@@ -56,7 +56,7 @@ function marketNav(idx: number, total: number, isCreator: boolean, market: Marke
     },
     "menu-btn": {
       type: "button",
-      props: { label: "Menu" },
+      props: { label: "Menu", variant: "primary" },
       on: { press: { action: "submit", params: { target: `${base}/?action=menu` } } },
     },
     "next-btn": {
@@ -71,7 +71,7 @@ function marketNav(idx: number, total: number, isCreator: boolean, market: Marke
     children.splice(2, 0, "resolve-btn");
     elements["resolve-btn"] = {
       type: "button",
-      props: { label: "Resolve" },
+      props: { label: "Resolve", variant: "primary", icon: "zap" },
       on: { press: { action: "submit", params: { target: `${base}/?action=resolve_view&market=${market.id}&idx=${idx}` } } },
     };
   }
@@ -94,13 +94,14 @@ function menuButton(base: string): Record<string, any> {
 export function buildMenu(balance: number, base: string): SnapResponse {
   return {
     version: "1.0",
-    theme: { accent: "teal" },
+    theme: { accent: "amber" },
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: { gap: "md" }, children: ["title", "subtitle", "make-bet-btn", "my-bets-btn", "create-btn"] },
-        title: { type: "text", props: { content: "FarCred", weight: "bold" } },
-        subtitle: { type: "text", props: { content: `You have ${balance} cred`, size: "sm" } },
+        root: { type: "stack", props: { gap: "lg" }, children: ["title", "balance-badge", "sep", "make-bet-btn", "my-bets-btn", "create-btn"] },
+        title: { type: "text", props: { content: "FarCred", weight: "bold", size: "lg", align: "center" } },
+        "balance-badge": { type: "badge", props: { label: `${balance} cred available`, color: "amber", icon: "coins" } },
+        sep: { type: "separator", props: {} },
         "make-bet-btn": {
           type: "button",
           props: { label: "Browse Markets", variant: "primary", icon: "trending-up" },
@@ -108,7 +109,7 @@ export function buildMenu(balance: number, base: string): SnapResponse {
         },
         "my-bets-btn": {
           type: "button",
-          props: { label: "My Bets", icon: "coins" },
+          props: { label: "My Bets", icon: "wallet" },
           on: { press: { action: "submit", params: { target: `${base}/?action=my_bets` } } },
         },
         "create-btn": {
@@ -131,13 +132,14 @@ export function buildMyBets(
   if (bets.length === 0) {
     return {
       version: "1.0",
-      theme: { accent: "teal" },
+      theme: { accent: "amber" },
       ui: {
         root: "root",
         elements: {
-          root: { type: "stack", props: {}, children: ["title", "empty", "browse-btn", ...menuButton(base) ? ["menu-btn"] : []] },
-          title: { type: "text", props: { content: "My Bets", weight: "bold" } },
-          empty: { type: "text", props: { content: `No bets yet. You have ${balance} cred \u2014 go find a market!`, size: "sm" } },
+          root: { type: "stack", props: { gap: "md" }, children: ["title", "balance-badge", "empty", "browse-btn", "menu-btn"] },
+          title: { type: "text", props: { content: "My Bets", weight: "bold", size: "lg", align: "center" } },
+          "balance-badge": { type: "badge", props: { label: `${balance} cred available`, color: "amber", icon: "coins" } },
+          empty: { type: "text", props: { content: `No bets yet \u2014 go find a market!`, size: "sm", align: "center" } },
           "browse-btn": {
             type: "button",
             props: { label: "Browse Markets", variant: "primary", icon: "trending-up" },
@@ -177,12 +179,13 @@ export function buildMyBets(
 
   return {
     version: "1.0",
-    theme: { accent: "teal" },
+    theme: { accent: "amber" },
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: {}, children: ["title", "bet-list", "menu-btn"] },
-        title: { type: "text", props: { content: "My Bets", weight: "bold" } },
+        root: { type: "stack", props: { gap: "md" }, children: ["title", "balance-badge", "bet-list", "menu-btn"] },
+        title: { type: "text", props: { content: "My Bets", weight: "bold", size: "lg", align: "center" } },
+        "balance-badge": { type: "badge", props: { label: `${balance} cred available`, color: "amber", icon: "coins" } },
         "bet-list": {
           type: "item_group",
           props: { separator: true, border: true },
@@ -207,15 +210,16 @@ export function buildMarketView(
   if (market.resolved) {
     const winner = optionLabel(market, market.outcome!);
     return {
-      version: "1.0", theme: { accent: "teal" },
+      version: "1.0", theme: { accent: "amber" },
       ui: {
         root: "root",
         elements: {
-          root: { type: "stack", props: {}, children: ["question", "result", "chart", "meta", "nav"] },
-          question: { type: "text", props: { content: market.question, weight: "bold" } },
+          root: { type: "stack", props: { gap: "md" }, children: ["question", "result", "chart", "meta", "sep", "nav"] },
+          question: { type: "text", props: { content: market.question, weight: "bold", size: "lg" } },
           result: { type: "badge", props: { label: `${winner} won`, color: "green", icon: "trophy" } },
           ...chart,
-          meta: { type: "text", props: { content: `${totalVotes} total cred`, size: "sm" } },
+          meta: { type: "text", props: { content: `${totalVotes} total cred`, size: "sm", align: "center" } },
+          sep: { type: "separator", props: {} },
           ...nav,
         },
       },
@@ -225,15 +229,16 @@ export function buildMarketView(
   if (existingBet) {
     const picked = optionLabel(market, existingBet.side);
     return {
-      version: "1.0", theme: { accent: "teal" },
+      version: "1.0", theme: { accent: "amber" },
       ui: {
         root: "root",
         elements: {
-          root: { type: "stack", props: {}, children: ["question", "position", "chart", "meta", "nav"] },
-          question: { type: "text", props: { content: market.question, weight: "bold" } },
-          position: { type: "badge", props: { label: `${existingBet.amount} cred on ${picked}`, color: "green", icon: "check" } },
+          root: { type: "stack", props: { gap: "md" }, children: ["question", "position", "chart", "meta", "sep", "nav"] },
+          question: { type: "text", props: { content: market.question, weight: "bold", size: "lg" } },
+          position: { type: "badge", props: { label: `${existingBet.amount} cred on ${picked}`, color: "amber", icon: "check" } },
           ...chart,
           meta: { type: "text", props: { content: `${totalVotes} cred placed \u00b7 You have ${balance} cred`, size: "sm" } },
+          sep: { type: "separator", props: {} },
           ...nav,
         },
       },
@@ -242,18 +247,19 @@ export function buildMarketView(
 
   const options = amountOptions(balance);
   return {
-    version: "1.0", theme: { accent: "teal" },
+    version: "1.0", theme: { accent: "amber" },
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: {}, children: ["question", "chart", "side-toggle", "amount-toggle", "bet-btn", "nav"] },
-        question: { type: "text", props: { content: market.question, weight: "bold" } },
+        root: { type: "stack", props: { gap: "md" }, children: ["question", "chart", "balance-badge", "side-toggle", "amount-toggle", "bet-btn", "nav"] },
+        question: { type: "text", props: { content: market.question, weight: "bold", size: "lg" } },
         ...chart,
-        "side-toggle": { type: "toggle_group", props: { name: "side", options: [market.optionA, market.optionB], defaultValue: market.optionA, label: `Pick a side (${balance} cred)` } },
+        "balance-badge": { type: "badge", props: { label: `${balance} cred available`, color: "amber", icon: "wallet" } },
+        "side-toggle": { type: "toggle_group", props: { name: "side", options: [market.optionA, market.optionB], defaultValue: market.optionA, label: "Pick a side" } },
         "amount-toggle": { type: "toggle_group", props: { name: "amount", options, defaultValue: options[0], label: "How much cred?" } },
         "bet-btn": {
           type: "button",
-          props: { label: "Place Bet", variant: "primary", icon: "coins" },
+          props: { label: "Place Bet", variant: "primary", icon: "zap" },
           on: { press: { action: "submit", params: { target: `${base}/?action=confirm&market=${market.id}` } } },
         },
         ...nav,
@@ -270,17 +276,18 @@ export function buildResolveView(market: Market, idx: number, total: number, bal
 
   return {
     version: "1.0",
-    theme: { accent: "teal" },
+    theme: { accent: "amber" },
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: {}, children: ["question", "chart", "meta", "resolve-btns", "menu-btn"] },
-        question: { type: "text", props: { content: market.question, weight: "bold" } },
+        root: { type: "stack", props: { gap: "md" }, children: ["question", "chart", "stats-badge", "sep", "resolve-btns", "menu-btn"] },
+        question: { type: "text", props: { content: market.question, weight: "bold", size: "lg" } },
         ...chart,
-        meta: { type: "text", props: { content: `You created this \u00b7 ${totalVotes} total cred`, size: "sm" } },
+        "stats-badge": { type: "badge", props: { label: `${totalVotes} total cred`, color: "amber", icon: "trending-up" } },
+        sep: { type: "separator", props: {} },
         "resolve-btns": { type: "stack", props: { direction: "horizontal", gap: "sm" }, children: ["resolve-a", "resolve-b"] },
-        "resolve-a": { type: "button", props: { label: `${market.optionA} wins`, variant: "primary" }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=a` } } } },
-        "resolve-b": { type: "button", props: { label: `${market.optionB} wins` }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=b` } } } },
+        "resolve-a": { type: "button", props: { label: `${market.optionA} wins`, variant: "primary", icon: "check" }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=a` } } } },
+        "resolve-b": { type: "button", props: { label: `${market.optionB} wins`, icon: "x" }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=b` } } } },
         ...menuButton(base),
       },
     },
@@ -298,12 +305,13 @@ export function buildEmptyState(balance: number, base: string): SnapResponse {
 export function buildCreateMarket(base: string): SnapResponse {
   return {
     version: "1.0",
-    theme: { accent: "teal" },
+    theme: { accent: "amber" },
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: {}, children: ["title", "question-input", "option-a-input", "option-b-input", "btn-row"] },
-        title: { type: "text", props: { content: "Create a Market", weight: "bold" } },
+        root: { type: "stack", props: { gap: "md" }, children: ["title", "sep", "question-input", "option-a-input", "option-b-input", "btn-row"] },
+        title: { type: "text", props: { content: "Create a Market", weight: "bold", size: "lg", align: "center" } },
+        sep: { type: "separator", props: {} },
         "question-input": { type: "input", props: { name: "question", type: "text", label: "Question", placeholder: "Who will win the match?", maxLength: 280 } },
         "option-a-input": { type: "input", props: { name: "optionA", type: "text", label: "Option A", placeholder: "Team Alpha", maxLength: 30 } },
         "option-b-input": { type: "input", props: { name: "optionB", type: "text", label: "Option B", placeholder: "Team Beta", maxLength: 30 } },
