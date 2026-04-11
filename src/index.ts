@@ -15,12 +15,16 @@ import {
   setUser,
   addBettor,
   getBettors,
+  getUserBetMarkets,
+  addUserBetMarket,
 } from "./store.js";
 import {
   buildMarketView,
   buildEmptyState,
   buildCreateMarket,
   buildResolveView,
+  buildMenu,
+  buildMyBets,
 } from "./screens.js";
 import { calculatePayouts } from "./payout.js";
 import type { Side, Market } from "./types.js";
@@ -68,11 +72,38 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
   const url = new URL(ctx.request.url);
   const action = url.searchParams.get("action");
 
+  // --- Menu ---
+  if (action === "menu") {
+    const user = await getOrCreateUser(fid);
+    return buildMenu(user.balance, BASE);
+  }
+
+  // --- My Bets ---
+  if (action === "my_bets") {
+    const user = await getOrCreateUser(fid);
+    const betMarketIds = await getUserBetMarkets(fid);
+    const index = await getMarketsIndex();
+
+    const bets: Array<{ market: Market; bet: { side: "a" | "b"; amount: number }; idx: number }> = [];
+    for (const marketId of betMarketIds) {
+      const market = await getMarket(marketId);
+      const bet = await getUserBet(marketId, fid);
+      if (market && bet) {
+        const idx = index.indexOf(marketId);
+        bets.push({ market, bet, idx: idx >= 0 ? idx : 0 });
+      }
+    }
+
+    return buildMyBets(bets, user.balance, BASE);
+  }
+
+  // --- Navigation ---
   if (action === "nav") {
     const idx = parseInt(url.searchParams.get("idx") ?? "0", 10);
     return showMarketAtIndex(fid, idx);
   }
 
+  // --- Confirm bet ---
   if (action === "confirm") {
     const marketId = url.searchParams.get("market")!;
     const market = await getMarket(marketId);
@@ -96,6 +127,7 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
 
     await setUserBet(marketId, fid, { side, amount });
     await addBettor(marketId, fid);
+    await addUserBetMarket(fid, marketId);
 
     if (side === "a") {
       market.votesA += amount;
@@ -108,10 +140,12 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     return showMarketAtIndex(fid, 0);
   }
 
+  // --- Create form ---
   if (action === "create") {
     return buildCreateMarket(BASE);
   }
 
+  // --- Submit new market ---
   if (action === "submit_market") {
     const question = (ctx.action.inputs.question as string ?? "").trim();
     const optionA = (ctx.action.inputs.optionA as string ?? "").trim() || "Yes";
@@ -137,6 +171,7 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     return showMarketAtIndex(fid, index.length - 1);
   }
 
+  // --- Resolve view ---
   if (action === "resolve_view") {
     const marketId = url.searchParams.get("market")!;
     const idx = parseInt(url.searchParams.get("idx") ?? "0", 10);
@@ -149,6 +184,7 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     return buildResolveView(market, idx, index.length, user.balance, BASE);
   }
 
+  // --- Resolve market ---
   if (action === "resolve") {
     const marketId = url.searchParams.get("market")!;
     const outcome = url.searchParams.get("outcome") as Side;
@@ -180,7 +216,9 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     return showMarketAtIndex(fid, 0);
   }
 
-  return showMarketAtIndex(fid, 0);
+  // Fallback: menu
+  const user = await getOrCreateUser(fid);
+  return buildMenu(user.balance, BASE);
 });
 
 const port = parseInt(process.env.PORT ?? "3003", 10);

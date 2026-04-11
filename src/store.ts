@@ -60,6 +60,17 @@ export async function setUserBet(
   await store.set(`market:${marketId}:bet:${fid}`, bet as unknown as DataStoreValue);
 }
 
+export async function getUserBetMarkets(fid: number): Promise<string[]> {
+  const result = (await store.get(`user:${fid}:bets`)) as string[] | null | undefined;
+  return result ?? [];
+}
+
+export async function addUserBetMarket(fid: number, marketId: string): Promise<void> {
+  const markets = await getUserBetMarkets(fid);
+  markets.push(marketId);
+  await store.set(`user:${fid}:bets`, markets);
+}
+
 export async function getBettors(marketId: string): Promise<number[]> {
   const result = (await store.get(`market:${marketId}:bettors`)) as number[] | null | undefined;
   return result ?? [];
