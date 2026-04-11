@@ -1,5 +1,6 @@
 // src/store.ts
 import { createTursoDataStore } from "@farcaster/snap-turso";
+import type { DataStoreValue } from "@farcaster/snap-turso";
 import type { Market, Bet, UserData } from "./types.js";
 
 export const store = createTursoDataStore();
@@ -8,12 +9,12 @@ export async function getOrCreateUser(fid: number): Promise<UserData> {
   const user = (await store.get(`user:${fid}`)) as UserData | null | undefined;
   if (user != null) return user;
   const newUser: UserData = { balance: 100 };
-  await store.set(`user:${fid}`, newUser);
+  await store.set(`user:${fid}`, newUser as unknown as DataStoreValue);
   return newUser;
 }
 
 export async function setUser(fid: number, data: UserData): Promise<void> {
-  await store.set(`user:${fid}`, data);
+  await store.set(`user:${fid}`, data as unknown as DataStoreValue);
 }
 
 export async function getMarket(id: string): Promise<Market | null> {
@@ -22,7 +23,7 @@ export async function getMarket(id: string): Promise<Market | null> {
 }
 
 export async function setMarket(market: Market): Promise<void> {
-  await store.set(`market:${market.id}`, market);
+  await store.set(`market:${market.id}`, market as unknown as DataStoreValue);
 }
 
 export async function getMarketsIndex(): Promise<string[]> {
@@ -56,7 +57,7 @@ export async function setUserBet(
   fid: number,
   bet: Bet,
 ): Promise<void> {
-  await store.set(`market:${marketId}:bet:${fid}`, bet);
+  await store.set(`market:${marketId}:bet:${fid}`, bet as unknown as DataStoreValue);
 }
 
 export async function getBettors(marketId: string): Promise<number[]> {

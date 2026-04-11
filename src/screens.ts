@@ -2,7 +2,7 @@ import type { Market, Bet, Side } from "./types.js";
 
 interface SnapResponse {
   version: "2.0";
-  theme?: { accent: string };
+  theme?: { accent?: string };
   effects?: string[];
   ui: {
     root: string;
