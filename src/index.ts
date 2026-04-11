@@ -48,12 +48,9 @@ async function showMarketAtIndex(fid: number, idx: number) {
     return buildEmptyState(user.balance, BASE);
   }
 
-  if (!market.resolved && market.creatorFid === fid) {
-    return buildResolveView(market, clampedIdx, index.length, user.balance, BASE);
-  }
-
   const existingBet = await getUserBet(marketId, fid);
-  return buildMarketView(market, clampedIdx, index.length, user.balance, existingBet, BASE);
+  const isCreator = market.creatorFid === fid;
+  return buildMarketView(market, clampedIdx, index.length, user.balance, existingBet, isCreator, BASE);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,7 +63,7 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     const lastIdx = index.length - 1;
     const market = await getMarket(index[lastIdx]);
     if (!market) return buildEmptyState(100, BASE);
-    return buildMarketView(market, lastIdx, index.length, 100, null, BASE);
+    return buildMarketView(market, lastIdx, index.length, 100, null, false, BASE);
   }
 
   const fid = ctx.action.fid;
@@ -145,6 +142,18 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
 
     const index = await getMarketsIndex();
     return showMarketAtIndex(fid, index.length - 1);
+  }
+
+  if (action === "resolve_view") {
+    const marketId = url.searchParams.get("market")!;
+    const idx = parseInt(url.searchParams.get("idx") ?? "0", 10);
+    const market = await getMarket(marketId);
+    if (!market || market.resolved || market.creatorFid !== fid) {
+      return showMarketAtIndex(fid, 0);
+    }
+    const user = await getOrCreateUser(fid);
+    const index = await getMarketsIndex();
+    return buildResolveView(market, idx, index.length, user.balance, BASE);
   }
 
   if (action === "resolve") {

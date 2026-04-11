@@ -41,13 +41,44 @@ function navButtons(idx: number, total: number, base: string): Record<string, an
   };
 }
 
+function creatorNavButtons(market: Market, idx: number, total: number, base: string): Record<string, any> {
+  const prev = (idx - 1 + total) % total;
+  const next = (idx + 1) % total;
+  return {
+    nav: {
+      type: "stack",
+      props: { direction: "horizontal", gap: "sm" },
+      children: ["prev-btn", "resolve-btn", "next-btn"],
+    },
+    "prev-btn": {
+      type: "button",
+      props: { label: "\u2190 Prev" },
+      on: { press: { action: "submit", params: { target: `${base}/?action=nav&dir=prev&idx=${prev}` } } },
+    },
+    "resolve-btn": {
+      type: "button",
+      props: { label: "Resolve" },
+      on: { press: { action: "submit", params: { target: `${base}/?action=resolve_view&market=${market.id}&idx=${idx}` } } },
+    },
+    "next-btn": {
+      type: "button",
+      props: { label: "Next \u2192" },
+      on: { press: { action: "submit", params: { target: `${base}/?action=nav&dir=next&idx=${next}` } } },
+    },
+  };
+}
+
 export function buildMarketView(
-  market: Market, idx: number, total: number, balance: number, existingBet: Bet | null, base: string,
+  market: Market, idx: number, total: number, balance: number, existingBet: Bet | null, isCreator: boolean, base: string,
 ): SnapResponse {
   const totalVotes = market.votesA + market.votesB;
-  const nav = navButtons(idx, total, base);
   const pctA = totalVotes > 0 ? Math.round((market.votesA / totalVotes) * 100) : 50;
   const pctB = totalVotes > 0 ? Math.round((market.votesB / totalVotes) * 100) : 50;
+
+  // For creators of unresolved markets, replace "+ Create" with "Resolve" in nav
+  const nav = isCreator && !market.resolved
+    ? creatorNavButtons(market, idx, total, base)
+    : navButtons(idx, total, base);
 
   const elements: Record<string, any> = {
     root: { type: "stack", props: {}, children: ["question", "meta", "progress", "actions", "nav"] },

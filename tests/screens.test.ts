@@ -25,7 +25,7 @@ const sampleMarket: Market = {
 
 describe("screen builders", () => {
   it("buildMarketView returns valid snap response", () => {
-    const resp = buildMarketView(sampleMarket, 0, 3, 73, null, BASE);
+    const resp = buildMarketView(sampleMarket, 0, 3, 73, null, false, BASE);
     expect(resp.version).toBe("1.0");
     expect(resp.ui.root).toBeDefined();
     expect(resp.ui.elements).toBeDefined();
@@ -37,6 +37,7 @@ describe("screen builders", () => {
     const resp = buildMarketView(
       sampleMarket, 0, 3, 73,
       { side: "a", amount: 25 },
+      false,
       BASE,
     );
     const elements = resp.ui.elements;
