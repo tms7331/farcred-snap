@@ -22,21 +22,18 @@ const sampleMarket: Market = {
 };
 
 describe("screen builders", () => {
-  it("buildMarketView shows side and amount toggles for active market", () => {
+  it("buildMarketView shows bar_chart and toggle groups for active market", () => {
     const resp = buildMarketView(sampleMarket, 0, 3, 73, null, false, BASE);
     expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
-    const toggles = Object.values(elements).filter(
-      (el: any) => el.type === "toggle_group",
-    ) as any[];
-    expect(toggles.length).toBe(2);
-    const sideToggle = toggles.find((t: any) => t.props.name === "side");
-    const amountToggle = toggles.find((t: any) => t.props.name === "amount");
-    expect(sideToggle.props.options).toEqual(["Over 5k", "Under 5k"]);
-    expect(amountToggle.props.options).toContain("5");
+    const chart = Object.values(elements).find((el: any) => el.type === "bar_chart") as any;
+    expect(chart).toBeDefined();
+    expect(chart.props.bars).toHaveLength(2);
+    const toggles = Object.values(elements).filter((el: any) => el.type === "toggle_group") as any[];
+    expect(toggles).toHaveLength(2);
   });
 
-  it("buildMarketView shows bet info when user already bet", () => {
+  it("buildMarketView shows badge when user already bet", () => {
     const resp = buildMarketView(
       sampleMarket, 0, 3, 73,
       { side: "a", amount: 25 },
@@ -44,15 +41,13 @@ describe("screen builders", () => {
       BASE,
     );
     const elements = resp.ui.elements;
-    const hasBetText = Object.values(elements).some(
-      (el: any) => el.type === "text" && el.props.content.includes("25 cred on Over 5k"),
+    const badge = Object.values(elements).find(
+      (el: any) => el.type === "badge" && el.props.label.includes("25 cred on Over 5k"),
     );
-    expect(hasBetText).toBe(true);
+    expect(badge).toBeDefined();
     // No toggle groups when already bet
-    const toggles = Object.values(elements).filter(
-      (el: any) => el.type === "toggle_group",
-    );
-    expect(toggles.length).toBe(0);
+    const toggles = Object.values(elements).filter((el: any) => el.type === "toggle_group");
+    expect(toggles).toHaveLength(0);
   });
 
   it("buildMarketView shows resolve nav for creators", () => {
@@ -64,10 +59,12 @@ describe("screen builders", () => {
     expect(hasResolve).toBe(true);
   });
 
-  it("buildEmptyState returns create button", () => {
+  it("buildEmptyState returns create button without logo", () => {
     const resp = buildEmptyState(100, BASE);
     expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
+    const root = elements[resp.ui.root];
+    expect(root.children).not.toContain("logo");
     const hasCreateBtn = Object.values(elements).some(
       (el: any) => el.type === "button" && el.props.label.includes("Create"),
     );
@@ -78,10 +75,8 @@ describe("screen builders", () => {
     const resp = buildCreateMarket(BASE);
     expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
-    const inputs = Object.values(elements).filter(
-      (el: any) => el.type === "input",
-    ) as any[];
-    expect(inputs.length).toBe(3);
+    const inputs = Object.values(elements).filter((el: any) => el.type === "input") as any[];
+    expect(inputs).toHaveLength(3);
     const names = inputs.map((i: any) => i.props.name).sort();
     expect(names).toEqual(["optionA", "optionB", "question"]);
   });
