@@ -97,7 +97,7 @@ export function buildMarketView(
         elements: {
           root: { type: "stack", props: {}, children: ["question", "meta", "progress", "result", "nav"] },
           question: { type: "text", props: { content: market.question, weight: "bold" } },
-          meta: { type: "text", props: { content: `${totalVotes} votes placed`, size: "sm" } },
+          meta: { type: "text", props: { content: `${totalVotes} cred placed`, size: "sm" } },
           progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
           result: { type: "text", props: { content: `Resolved: ${winner} won`, weight: "bold" } },
           ...nav,
@@ -116,9 +116,9 @@ export function buildMarketView(
         elements: {
           root: { type: "stack", props: {}, children: ["question", "meta", "progress", "position", "nav"] },
           question: { type: "text", props: { content: market.question, weight: "bold" } },
-          meta: { type: "text", props: { content: `${totalVotes} votes placed \u00b7 You have ${balance} votes`, size: "sm" } },
+          meta: { type: "text", props: { content: `${totalVotes} cred placed \u00b7 You have ${balance} cred`, size: "sm" } },
           progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
-          position: { type: "text", props: { content: `You bet ${existingBet.amount} votes on ${picked}`, size: "sm" } },
+          position: { type: "text", props: { content: `You bet ${existingBet.amount} cred on ${picked}`, size: "sm" } },
           ...nav,
         },
       },
@@ -136,8 +136,8 @@ export function buildMarketView(
         root: { type: "stack", props: {}, children: ["question", "progress", "side-toggle", "amount-toggle", "bet-btn", "nav"] },
         question: { type: "text", props: { content: market.question, weight: "bold" } },
         progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
-        "side-toggle": { type: "toggle_group", props: { name: "side", options: [market.optionA, market.optionB], defaultValue: market.optionA, label: `Pick a side (${balance} votes)` } },
-        "amount-toggle": { type: "toggle_group", props: { name: "amount", options, defaultValue: options[0], label: "How many votes?" } },
+        "side-toggle": { type: "toggle_group", props: { name: "side", options: [market.optionA, market.optionB], defaultValue: market.optionA, label: `Pick a side (${balance} cred)` } },
+        "amount-toggle": { type: "toggle_group", props: { name: "amount", options, defaultValue: options[0], label: "How much cred?" } },
         "bet-btn": {
           type: "button",
           props: { label: "Place Bet", variant: "primary" },
@@ -163,7 +163,7 @@ export function buildResolveView(market: Market, idx: number, total: number, bal
       elements: {
         root: { type: "stack", props: {}, children: ["question", "meta", "progress", "resolve-btns", "nav"] },
         question: { type: "text", props: { content: market.question, weight: "bold" } },
-        meta: { type: "text", props: { content: `You created this \u00b7 ${totalVotes} total votes`, size: "sm" } },
+        meta: { type: "text", props: { content: `You created this \u00b7 ${totalVotes} total cred`, size: "sm" } },
         progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
         "resolve-btns": { type: "stack", props: { direction: "horizontal", gap: "sm" }, children: ["resolve-a", "resolve-b"] },
         "resolve-a": { type: "button", props: { label: `${market.optionA} wins`, variant: "primary" }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=a` } } } },
@@ -182,8 +182,8 @@ export function buildEmptyState(balance: number, base: string): SnapResponse {
       root: "root",
       elements: {
         root: { type: "stack", props: {}, children: ["title", "subtitle", "create-btn"] },
-        title: { type: "text", props: { content: "Prediction Market", weight: "bold" } },
-        subtitle: { type: "text", props: { content: `No markets yet. You have ${balance} votes \u2014 create the first market!`, size: "sm" } },
+        title: { type: "text", props: { content: "FarCred", weight: "bold" } },
+        subtitle: { type: "text", props: { content: `Welcome to FarCred! You have ${balance} cred \u2014 create the first market!`, size: "sm" } },
         "create-btn": { type: "button", props: { label: "Create a Market", variant: "primary" }, on: { press: { action: "submit", params: { target: `${base}/?action=create` } } } },
       },
     },

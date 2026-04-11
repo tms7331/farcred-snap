@@ -45,7 +45,7 @@ describe("screen builders", () => {
     );
     const elements = resp.ui.elements;
     const hasBetText = Object.values(elements).some(
-      (el: any) => el.type === "text" && el.props.content.includes("25 votes on Over 5k"),
+      (el: any) => el.type === "text" && el.props.content.includes("25 cred on Over 5k"),
     );
     expect(hasBetText).toBe(true);
     // No toggle groups when already bet
