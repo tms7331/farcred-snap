@@ -24,17 +24,15 @@ function amountOptions(balance: number): string[] {
 
 function marketChart(market: Market): Record<string, any> {
   const totalVotes = market.votesA + market.votesB;
-  const max = Math.max(market.votesA, market.votesB, 1);
+  const pctA = totalVotes > 0 ? Math.round((market.votesA / totalVotes) * 100) : 50;
+  const pctB = totalVotes > 0 ? Math.round((market.votesB / totalVotes) * 100) : 50;
   return {
     chart: {
-      type: "bar_chart",
+      type: "progress",
       props: {
-        bars: [
-          { label: `${market.optionA} (${totalVotes > 0 ? Math.round((market.votesA / totalVotes) * 100) : 50}%)`, value: market.votesA, color: "green" },
-          { label: `${market.optionB} (${totalVotes > 0 ? Math.round((market.votesB / totalVotes) * 100) : 50}%)`, value: market.votesB, color: "blue" },
-        ],
-        max,
-        color: "green",
+        value: market.votesA,
+        max: Math.max(totalVotes, 1),
+        label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}`,
       },
     },
   };

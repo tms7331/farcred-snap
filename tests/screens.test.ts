@@ -26,9 +26,9 @@ describe("screen builders", () => {
     const resp = buildMarketView(sampleMarket, 0, 3, 73, null, false, BASE);
     expect(resp.version).toBe("1.0");
     const elements = resp.ui.elements;
-    const chart = Object.values(elements).find((el: any) => el.type === "bar_chart") as any;
+    const chart = Object.values(elements).find((el: any) => el.type === "progress") as any;
     expect(chart).toBeDefined();
-    expect(chart.props.bars).toHaveLength(2);
+    expect(chart.props.label).toContain("Over 5k");
     const toggles = Object.values(elements).filter((el: any) => el.type === "toggle_group") as any[];
     expect(toggles).toHaveLength(2);
   });
