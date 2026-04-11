@@ -10,6 +10,8 @@ interface SnapResponse {
   };
 }
 
+const LOGO = { type: "text", props: { content: "FarCred", size: "sm", weight: "bold", align: "right" } };
+
 function optionLabel(market: Market, side: Side): string {
   return side === "a" ? market.optionA : market.optionB;
 }
@@ -95,7 +97,8 @@ export function buildMarketView(
       ui: {
         root: "root",
         elements: {
-          root: { type: "stack", props: {}, children: ["question", "meta", "progress", "result", "nav"] },
+          root: { type: "stack", props: {}, children: ["logo", "question", "meta", "progress", "result", "nav"] },
+          logo: LOGO,
           question: { type: "text", props: { content: market.question, weight: "bold" } },
           meta: { type: "text", props: { content: `${totalVotes} cred placed`, size: "sm" } },
           progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
@@ -114,7 +117,8 @@ export function buildMarketView(
       ui: {
         root: "root",
         elements: {
-          root: { type: "stack", props: {}, children: ["question", "meta", "progress", "position", "nav"] },
+          root: { type: "stack", props: {}, children: ["logo", "question", "meta", "progress", "position", "nav"] },
+          logo: LOGO,
           question: { type: "text", props: { content: market.question, weight: "bold" } },
           meta: { type: "text", props: { content: `${totalVotes} cred placed \u00b7 You have ${balance} cred`, size: "sm" } },
           progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
@@ -133,7 +137,8 @@ export function buildMarketView(
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: {}, children: ["question", "progress", "side-toggle", "amount-toggle", "bet-btn", "nav"] },
+        root: { type: "stack", props: {}, children: ["logo", "question", "progress", "side-toggle", "amount-toggle", "bet-btn", "nav"] },
+        logo: LOGO,
         question: { type: "text", props: { content: market.question, weight: "bold" } },
         progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
         "side-toggle": { type: "toggle_group", props: { name: "side", options: [market.optionA, market.optionB], defaultValue: market.optionA, label: `Pick a side (${balance} cred)` } },
@@ -161,7 +166,8 @@ export function buildResolveView(market: Market, idx: number, total: number, bal
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: {}, children: ["question", "meta", "progress", "resolve-btns", "nav"] },
+        root: { type: "stack", props: {}, children: ["logo", "question", "meta", "progress", "resolve-btns", "nav"] },
+        logo: LOGO,
         question: { type: "text", props: { content: market.question, weight: "bold" } },
         meta: { type: "text", props: { content: `You created this \u00b7 ${totalVotes} total cred`, size: "sm" } },
         progress: { type: "progress", props: { value: market.votesA, max: Math.max(totalVotes, 1), label: `${market.optionA} ${pctA}% \u2014 ${pctB}% ${market.optionB}` } },
@@ -181,7 +187,8 @@ export function buildEmptyState(balance: number, base: string): SnapResponse {
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: {}, children: ["title", "subtitle", "create-btn"] },
+        root: { type: "stack", props: {}, children: ["logo", "title", "subtitle", "create-btn"] },
+        logo: LOGO,
         title: { type: "text", props: { content: "FarCred", weight: "bold" } },
         subtitle: { type: "text", props: { content: `Welcome to FarCred! You have ${balance} cred \u2014 create the first market!`, size: "sm" } },
         "create-btn": { type: "button", props: { label: "Create a Market", variant: "primary" }, on: { press: { action: "submit", params: { target: `${base}/?action=create` } } } },
@@ -197,7 +204,8 @@ export function buildCreateMarket(base: string): SnapResponse {
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: {}, children: ["title", "question-input", "option-a-input", "option-b-input", "btn-row"] },
+        root: { type: "stack", props: {}, children: ["logo", "title", "question-input", "option-a-input", "option-b-input", "btn-row"] },
+        logo: LOGO,
         title: { type: "text", props: { content: "Create a Market", weight: "bold" } },
         "question-input": { type: "input", props: { name: "question", type: "text", label: "Question", placeholder: "Who will win the match?", maxLength: 280 } },
         "option-a-input": { type: "input", props: { name: "optionA", type: "text", label: "Option A", placeholder: "Team Alpha", maxLength: 30 } },
