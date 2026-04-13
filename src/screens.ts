@@ -317,6 +317,24 @@ export function buildEmptyState(balance: number, base: string): SnapResponse {
   return buildMenu(balance, base);
 }
 
+// --- Not Eligible ---
+
+export function buildNotEligible(base: string): SnapResponse {
+  return {
+    version: "1.0",
+    theme: { accent: "amber" },
+    ui: {
+      root: "root",
+      elements: {
+        root: { type: "stack", props: { gap: "md" }, children: ["title", "msg", "menu-btn"] },
+        title: { type: "text", props: { content: "Not Eligible", weight: "bold", size: "lg", align: "center" } },
+        msg: { type: "text", props: { content: "Your account needs a Neynar score of at least 0.9 to create markets.", size: "sm", align: "center" } },
+        ...menuButton(base),
+      },
+    },
+  };
+}
+
 // --- Create Market ---
 
 export function buildCreateMarket(base: string): SnapResponse {

@@ -24,9 +24,11 @@ import {
   buildResolveView,
   buildMenu,
   buildMyBets,
+  buildNotEligible,
 } from "./screens.js";
 import { calculatePayouts } from "./payout.js";
 import { getUsername } from "./fnames.js";
+import { hasMinNeynarScore } from "./neynar.js";
 import type { Side, Market } from "./types.js";
 
 import { bannerSvg } from "./banner.js";
@@ -146,10 +148,12 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
   }
 
   if (action === "create") {
+    if (!(await hasMinNeynarScore(fid))) return buildNotEligible(BASE);
     return buildCreateMarket(BASE);
   }
 
   if (action === "submit_market") {
+    if (!(await hasMinNeynarScore(fid))) return buildNotEligible(BASE);
     const question = (ctx.action.inputs.question as string ?? "").trim();
     const optionA = (ctx.action.inputs.optionA as string ?? "").trim() || "Yes";
     const optionB = (ctx.action.inputs.optionB as string ?? "").trim() || "No";
