@@ -114,10 +114,9 @@ export function buildMenu(balance: number, base: string): SnapResponse {
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: { gap: "lg" }, children: ["logo", "balance-badge", "sep", "make-bet-btn", "my-bets-btn", "create-btn"] },
+        root: { type: "stack", props: { gap: "lg" }, children: ["logo", "balance-badge", "make-bet-btn", "my-bets-btn", "create-btn"] },
         logo: { type: "image", props: { url: "https://raw.githubusercontent.com/tms7331/farcred-snap/main/public/farcredlogo.png", aspect: "16:9", alt: "FarCred" } },
         "balance-badge": { type: "badge", props: { label: `${balance} cred available`, color: "amber", icon: "coins" } },
-        sep: { type: "separator", props: {} },
         "make-bet-btn": {
           type: "button",
           props: { label: "Browse Markets", variant: "primary", icon: "trending-up" },
