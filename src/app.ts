@@ -144,7 +144,9 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     }
     await setMarket(market);
 
-    return showMarketAtIndex(fid, 0);
+    const index = await getMarketsIndex();
+    const betIdx = index.indexOf(marketId);
+    return showMarketAtIndex(fid, betIdx >= 0 ? betIdx : 0);
   }
 
   if (action === "create") {
