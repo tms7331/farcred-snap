@@ -121,12 +121,12 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     const existing = await getUserBet(marketId, fid);
     if (existing) return showMarketAtIndex(fid, 0);
 
-    const sideInput = ctx.action.inputs.side as string;
-    const side: Side = sideInput === market.optionA ? "a" : "b";
+    const sideInput = ctx.action.inputs.side as string | undefined;
+    const side: Side = sideInput === market.optionB ? "b" : "a";
 
     const user = await getOrCreateUser(fid);
     const amount = Math.max(1, Math.min(
-      Number(ctx.action.inputs.amount) || 10,
+      Number(ctx.action.inputs.amount) || 5,
       user.balance,
     ));
 
