@@ -22,6 +22,22 @@ function amountOptions(balance: number): string[] {
   return presets.slice(0, 6).map(String);
 }
 
+function marketHeader(market: Market, creatorName: string): Record<string, any> {
+  return {
+    header: {
+      type: "stack",
+      props: { direction: "horizontal", justify: "between" },
+      children: ["question", "creator-btn"],
+    },
+    question: { type: "text", props: { content: market.question, weight: "bold", size: "lg" } },
+    "creator-btn": {
+      type: "button",
+      props: { label: `Creator: @${creatorName}`, icon: "user" },
+      on: { press: { action: "view_profile", params: { fid: market.creatorFid } } },
+    },
+  };
+}
+
 function marketChart(market: Market): Record<string, any> {
   const totalVotes = market.votesA + market.votesB;
   const pctA = totalVotes > 0 ? Math.round((market.votesA / totalVotes) * 100) : 50;
@@ -98,8 +114,8 @@ export function buildMenu(balance: number, base: string): SnapResponse {
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: { gap: "lg" }, children: ["title", "balance-badge", "sep", "make-bet-btn", "my-bets-btn", "create-btn"] },
-        title: { type: "text", props: { content: "FarCred", weight: "bold", size: "lg", align: "center" } },
+        root: { type: "stack", props: { gap: "lg" }, children: ["logo", "balance-badge", "sep", "make-bet-btn", "my-bets-btn", "create-btn"] },
+        logo: { type: "image", props: { url: "https://raw.githubusercontent.com/tms7331/farcred-snap/main/public/farcredlogo.png", aspect: "16:9", alt: "FarCred" } },
         "balance-badge": { type: "badge", props: { label: `${balance} cred available`, color: "amber", icon: "coins" } },
         sep: { type: "separator", props: {} },
         "make-bet-btn": {
@@ -201,7 +217,7 @@ export function buildMyBets(
 // --- Market View ---
 
 export function buildMarketView(
-  market: Market, idx: number, total: number, balance: number, existingBet: Bet | null, isCreator: boolean, base: string,
+  market: Market, idx: number, total: number, balance: number, existingBet: Bet | null, isCreator: boolean, base: string, creatorName: string,
 ): SnapResponse {
   const totalVotes = market.votesA + market.votesB;
   const chart = marketChart(market);
@@ -214,8 +230,8 @@ export function buildMarketView(
       ui: {
         root: "root",
         elements: {
-          root: { type: "stack", props: { gap: "md" }, children: ["question", "result", "chart", "meta", "sep", "nav"] },
-          question: { type: "text", props: { content: market.question, weight: "bold", size: "lg" } },
+          root: { type: "stack", props: { gap: "md" }, children: ["header", "result", "chart", "meta", "sep", "nav"] },
+          ...marketHeader(market, creatorName),
           result: { type: "badge", props: { label: `${winner} won`, color: "green", icon: "trophy" } },
           ...chart,
           meta: { type: "text", props: { content: `${totalVotes} total cred`, size: "sm", align: "center" } },
@@ -233,8 +249,8 @@ export function buildMarketView(
       ui: {
         root: "root",
         elements: {
-          root: { type: "stack", props: { gap: "md" }, children: ["question", "position", "chart", "meta", "sep", "nav"] },
-          question: { type: "text", props: { content: market.question, weight: "bold", size: "lg" } },
+          root: { type: "stack", props: { gap: "md" }, children: ["header", "position", "chart", "meta", "sep", "nav"] },
+          ...marketHeader(market, creatorName),
           position: { type: "badge", props: { label: `${existingBet.amount} cred on ${picked}`, color: "amber", icon: "check" } },
           ...chart,
           meta: { type: "text", props: { content: `${totalVotes} cred placed \u00b7 You have ${balance} cred`, size: "sm" } },
@@ -251,8 +267,8 @@ export function buildMarketView(
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: { gap: "md" }, children: ["question", "chart", "balance-badge", "side-toggle", "amount-toggle", "bet-btn", "nav"] },
-        question: { type: "text", props: { content: market.question, weight: "bold", size: "lg" } },
+        root: { type: "stack", props: { gap: "md" }, children: ["header", "chart", "balance-badge", "side-toggle", "amount-toggle", "bet-btn", "nav"] },
+        ...marketHeader(market, creatorName),
         ...chart,
         "balance-badge": { type: "badge", props: { label: `${balance} cred available`, color: "amber", icon: "wallet" } },
         "side-toggle": { type: "toggle_group", props: { name: "side", options: [market.optionA, market.optionB], defaultValue: market.optionA, label: "Pick a side" } },
@@ -280,7 +296,7 @@ export function buildResolveView(market: Market, idx: number, total: number, bal
     ui: {
       root: "root",
       elements: {
-        root: { type: "stack", props: { gap: "md" }, children: ["question", "chart", "stats-badge", "sep", "resolve-btns", "menu-btn"] },
+        root: { type: "stack", props: { gap: "md" }, children: ["question", "chart", "stats-badge", "sep", "resolve-btns", "delete-btn", "menu-btn"] },
         question: { type: "text", props: { content: market.question, weight: "bold", size: "lg" } },
         ...chart,
         "stats-badge": { type: "badge", props: { label: `${totalVotes} total cred`, color: "amber", icon: "trending-up" } },
@@ -288,6 +304,7 @@ export function buildResolveView(market: Market, idx: number, total: number, bal
         "resolve-btns": { type: "stack", props: { direction: "horizontal", gap: "sm" }, children: ["resolve-a", "resolve-b"] },
         "resolve-a": { type: "button", props: { label: `${market.optionA} wins`, variant: "primary", icon: "check" }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=a` } } } },
         "resolve-b": { type: "button", props: { label: `${market.optionB} wins`, variant: "primary", icon: "x" }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=b` } } } },
+        "delete-btn": { type: "button", props: { label: "Delete Market", icon: "x" }, on: { press: { action: "submit", params: { target: `${base}/?action=delete_market&market=${market.id}` } } } },
         ...menuButton(base),
       },
     },

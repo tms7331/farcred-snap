@@ -37,6 +37,12 @@ export async function addMarketToIndex(id: string): Promise<void> {
   await store.set("markets:index", index);
 }
 
+export async function removeMarketFromIndex(id: string): Promise<void> {
+  const index = await getMarketsIndex();
+  const filtered = index.filter(m => m !== id);
+  await store.set("markets:index", filtered);
+}
+
 export async function getNextMarketId(): Promise<string> {
   const count = (await store.get("markets:count")) as number | null | undefined;
   const next = (count ?? 0) + 1;

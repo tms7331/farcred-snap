@@ -7,6 +7,7 @@ import {
   setMarket,
   getMarketsIndex,
   addMarketToIndex,
+  removeMarketFromIndex,
   getNextMarketId,
   getUserBet,
   setUserBet,
@@ -25,6 +26,7 @@ import {
   buildMyBets,
 } from "./screens.js";
 import { calculatePayouts } from "./payout.js";
+import { getUsername } from "./fnames.js";
 import type { Side, Market } from "./types.js";
 
 import { bannerSvg } from "./banner.js";
@@ -59,7 +61,8 @@ async function showMarketAtIndex(fid: number, idx: number) {
 
   const existingBet = await getUserBet(marketId, fid);
   const isCreator = market.creatorFid === fid;
-  return buildMarketView(market, clampedIdx, index.length, user.balance, existingBet, isCreator, BASE);
+  const creatorName = await getUsername(market.creatorFid);
+  return buildMarketView(market, clampedIdx, index.length, user.balance, existingBet, isCreator, BASE, creatorName);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,7 +75,8 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     const lastIdx = index.length - 1;
     const market = await getMarket(index[lastIdx]);
     if (!market) return buildEmptyState(100, BASE);
-    return buildMarketView(market, lastIdx, index.length, 100, null, false, BASE);
+    const creatorName = await getUsername(market.creatorFid);
+    return buildMarketView(market, lastIdx, index.length, 100, null, false, BASE, creatorName);
   }
 
   const fid = ctx.action.fid;
@@ -211,6 +215,31 @@ registerSnapHandler(app, async (ctx: any): Promise<any> => {
     await setMarket(market);
 
     return showMarketAtIndex(fid, 0);
+  }
+
+  if (action === "delete_market") {
+    const marketId = url.searchParams.get("market")!;
+    const market = await getMarket(marketId);
+
+    if (!market || market.creatorFid !== fid) {
+      return showMarketAtIndex(fid, 0);
+    }
+
+    // Refund all bettors
+    const bettorFids = await getBettors(marketId);
+    for (const bettorFid of bettorFids) {
+      const bet = await getUserBet(marketId, bettorFid);
+      if (bet) {
+        const bettorUser = await getOrCreateUser(bettorFid);
+        bettorUser.balance += bet.amount;
+        await setUser(bettorFid, bettorUser);
+      }
+    }
+
+    await removeMarketFromIndex(marketId);
+
+    const user = await getOrCreateUser(fid);
+    return buildMenu(user.balance, BASE);
   }
 
   const user = await getOrCreateUser(fid);
