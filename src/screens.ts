@@ -51,17 +51,17 @@ function marketNav(idx: number, total: number, isCreator: boolean, market: Marke
     },
     "prev-btn": {
       type: "button",
-      props: { label: "\u2190 Prev" },
+      props: { label: "\u2190 Prev", variant: "primary" },
       on: { press: { action: "submit", params: { target: `${base}/?action=nav&dir=prev&idx=${prev}` } } },
     },
     "menu-btn": {
       type: "button",
-      props: { label: "Menu", variant: "primary" },
+      props: { label: "Menu" },
       on: { press: { action: "submit", params: { target: `${base}/?action=menu` } } },
     },
     "next-btn": {
       type: "button",
-      props: { label: "Next \u2192" },
+      props: { label: "Next \u2192", variant: "primary" },
       on: { press: { action: "submit", params: { target: `${base}/?action=nav&dir=next&idx=${next}` } } },
     },
   };
@@ -109,12 +109,12 @@ export function buildMenu(balance: number, base: string): SnapResponse {
         },
         "my-bets-btn": {
           type: "button",
-          props: { label: "My Bets", icon: "wallet" },
+          props: { label: "My Bets", variant: "primary", icon: "wallet" },
           on: { press: { action: "submit", params: { target: `${base}/?action=my_bets` } } },
         },
         "create-btn": {
           type: "button",
-          props: { label: "Create Market", icon: "plus" },
+          props: { label: "Create Market", variant: "primary", icon: "plus" },
           on: { press: { action: "submit", params: { target: `${base}/?action=create` } } },
         },
       },
@@ -172,7 +172,7 @@ export function buildMyBets(
     };
     betElements[`view-${i}`] = {
       type: "button",
-      props: { label: "View", icon: "arrow-right" },
+      props: { label: "View", variant: "primary", icon: "arrow-right" },
       on: { press: { action: "submit", params: { target: `${base}/?action=nav&idx=${idx}` } } },
     };
   }
@@ -287,7 +287,7 @@ export function buildResolveView(market: Market, idx: number, total: number, bal
         sep: { type: "separator", props: {} },
         "resolve-btns": { type: "stack", props: { direction: "horizontal", gap: "sm" }, children: ["resolve-a", "resolve-b"] },
         "resolve-a": { type: "button", props: { label: `${market.optionA} wins`, variant: "primary", icon: "check" }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=a` } } } },
-        "resolve-b": { type: "button", props: { label: `${market.optionB} wins`, icon: "x" }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=b` } } } },
+        "resolve-b": { type: "button", props: { label: `${market.optionB} wins`, variant: "primary", icon: "x" }, on: { press: { action: "submit", params: { target: `${base}/?action=resolve&market=${market.id}&outcome=b` } } } },
         ...menuButton(base),
       },
     },

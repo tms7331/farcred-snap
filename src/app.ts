@@ -27,8 +27,17 @@ import {
 import { calculatePayouts } from "./payout.js";
 import type { Side, Market } from "./types.js";
 
+import { bannerSvg } from "./banner.js";
+
 const app = new Hono();
 app.use("*", cors());
+
+app.get("/banner.svg", (c) => {
+  return c.body(bannerSvg, 200, {
+    "Content-Type": "image/svg+xml",
+    "Cache-Control": "public, max-age=86400",
+  });
+});
 
 const BASE = process.env.SNAP_PUBLIC_BASE_URL ?? "http://localhost:3003";
 
